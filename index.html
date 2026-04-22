@@ -102,6 +102,7 @@ body{font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;backgro
     </div>
   </div>
 </div>
+
 <div class="app">
   <div class="setup-banner" id="setup-banner" onclick="openSetup()">⚠ GAS URLが未設定 — タップして設定</div>
   <div class="header">
@@ -115,6 +116,7 @@ body{font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;backgro
     <div class="tab active" id="tab-form" onclick="sw('form')">入力</div>
     <div class="tab" id="tab-profit" onclick="sw('profit')">利益計算</div>
   </div>
+
   <div id="vform">
     <div class="section">
       <div class="slabel">基本情報</div>
@@ -134,6 +136,7 @@ body{font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;backgro
       </div>
     </div>
   </div>
+
   <div id="vprofit" style="display:none">
     <div class="section" style="margin-top:12px">
       <div class="slabel">仕入れ入力</div>
@@ -148,21 +151,26 @@ body{font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;backgro
     </div>
   </div>
 </div>
+
 <div class="abar">
   <button class="bs" onclick="previewOnly()">確認</button>
   <button class="bp" onclick="handleSave()">シート作成 &amp; PDF</button>
 </div>
+
 <div class="rover" id="rover">
   <div class="rcard">
     <div class="rtbar"><span id="rtitle">処理中...</span><button class="bsm" onclick="closeR()">閉じる</button></div>
     <div id="rbody"></div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
+
 <script>
 var GK='craftmind_gas_url';
 var items=[],ic=0;
-function getGas(){return localStorage.getItem(GK)||''}
+
+function getGas(){return localStorage.getItem(GK)||'';}
 function saveGasUrl(){
   var u=document.getElementById('gas-url-input').value.trim();
   if(!u){toast('URLを入力してください');return;}
@@ -174,6 +182,7 @@ function saveGasUrl(){
 function openSetup(){document.getElementById('gas-url-input').value=getGas();document.getElementById('setup-modal').className='modal show';}
 function closeSetup(){document.getElementById('setup-modal').className='modal';}
 if(getGas())document.getElementById('setup-banner').className='setup-banner hidden';
+
 function genNum(){
   var d=new Date(),yr=String(d.getFullYear()).slice(-2),mo=String(d.getMonth()+1).padStart(2,'0');
   var k='eq_'+yr+mo,seq=parseInt(localStorage.getItem(k)||'0')+1;
@@ -184,6 +193,7 @@ var estNum=genNum();
 document.getElementById('est-number').textContent='No.'+estNum;
 document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
 upV();
+
 function upV(){
   var d=document.getElementById('f-date').value,el=document.getElementById('vbadge');
   if(!d){el.textContent='—';return;}
@@ -199,6 +209,7 @@ function sw(t){
 }
 function fy(v){return'¥'+Math.round(v).toLocaleString('ja-JP');}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
 function addItem(n,q,u,p,m,pu){
   ic++;items.push({id:'i'+ic,name:n||'',qty:q!==undefined?q:1,unit:u||'式',price:p||0,memo:m||'',purchase:pu||0});
   renderI();
@@ -244,37 +255,53 @@ function upP(){
   if(m===null){el.textContent='—';el.className='pval';}
   else{el.textContent=m.toFixed(1)+'%';el.className='pval '+(m>=20?'g':m>=10?'w':'b');}
 }
+
 function previewOnly(){
   var client=document.getElementById('f-client').value||'（宛先未入力）',title=document.getElementById('f-title').value||'（案件名未入力）';
   var s=sub(),t=Math.round(s*.1),total=s+t;
-  var rows=items.map(function(it,i){return'<tr><td>'+(i+1)+'</td><td>'+esc(it.name)+'</td><td style="text-align:right">'+it.qty+'</td><td>'+esc(it.unit)+'</td><td style="text-align:right">'+Math.round(it.price).toLocaleString()+'</td><td style="text-align:right">'+Math.round(it.qty*it.price).toLocaleString()+'</td><td>'+esc(it.memo)+'</td></tr>';}).join('');
-  var html='<div style="font-size:12px;color:var(--text2);margin-bottom:6px">No.'+esc(estNum)+'</div>'+
+  var rows=items.map(function(it,i){return'<tr><td style="padding:5px 4px">'+(i+1)+'</td><td style="padding:5px 4px">'+esc(it.name)+'</td><td style="padding:5px 4px;text-align:right">'+it.qty+'</td><td style="padding:5px 4px">'+esc(it.unit)+'</td><td style="padding:5px 4px;text-align:right">'+Math.round(it.price).toLocaleString()+'</td><td style="padding:5px 4px;text-align:right">'+Math.round(it.qty*it.price).toLocaleString()+'</td></tr>';}).join('');
+  document.getElementById('rtitle').textContent='見積内容確認';
+  document.getElementById('rbody').innerHTML=
+    '<div style="font-size:12px;color:var(--text2);margin-bottom:6px">No.'+esc(estNum)+'</div>'+
     '<div style="font-size:17px;font-weight:600;margin-bottom:4px">'+esc(client)+'</div>'+
     '<div style="font-size:13px;color:var(--text2);margin-bottom:10px">件名：'+esc(title)+'</div>'+
     '<div style="background:var(--bg2);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;justify-content:space-between">'+
     '<span style="font-size:12px;color:var(--text2)">お見積り金額（税込）</span><span style="font-size:18px;font-weight:600">'+fy(total)+'円</span></div>'+
     '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">'+
-    '<thead><tr style="background:var(--bg2)"><th style="padding:5px 4px;text-align:left">#</th><th style="padding:5px 4px;text-align:left">費目</th><th style="padding:5px 4px;text-align:right">数量</th><th style="padding:5px 4px">単位</th><th style="padding:5px 4px;text-align:right">単価</th><th style="padding:5px 4px;text-align:right">金額</th><th style="padding:5px 4px">備考</th></tr></thead>'+
+    '<thead><tr style="background:var(--bg2)"><th style="padding:5px 4px;text-align:left">#</th><th style="padding:5px 4px;text-align:left">費目</th><th style="padding:5px 4px;text-align:right">数量</th><th style="padding:5px 4px">単位</th><th style="padding:5px 4px;text-align:right">単価</th><th style="padding:5px 4px;text-align:right">金額</th></tr></thead>'+
     '<tbody>'+rows+'</tbody></table></div>'+
     '<div style="text-align:right;font-size:13px;margin-top:8px">小計 '+fy(s)+'　消費税 '+fy(t)+'</div>'+
     '<div style="text-align:right;font-size:15px;font-weight:600;margin-top:4px">合計 '+fy(total)+'円</div>';
-  document.getElementById('rtitle').textContent='見積内容確認';
-  document.getElementById('rbody').innerHTML=html;
   document.getElementById('rover').className='rover show';
 }
+
 async function handleSave(){
   var client=document.getElementById('f-client').value,title=document.getElementById('f-title').value;
   if(!client||!title){toast('宛先と案件名を入力してください');return;}
   var gasUrl=getGas();
   if(!gasUrl){toast('GAS URLを設定してください');openSetup();return;}
+
   document.getElementById('rtitle').textContent='作成中...';
   document.getElementById('rbody').innerHTML='<div class="spinner-wrap"><div class="spinner"></div><div style="font-size:13px;color:var(--text2)">スプレッドシートを作成中…<br>PDFを生成中…</div></div>';
   document.getElementById('rover').className='rover show';
-  var payload={estNum:estNum,client:client,title:title,date:document.getElementById('f-date').value,due:document.getElementById('f-due').value,payment:document.getElementById('f-pay').value||'貴社ご規定通り',validity:document.getElementById('vbadge').textContent,items:items.map(function(it){return{name:it.name,qty:it.qty,unit:it.unit,price:it.price,memo:it.memo,purchase:it.purchase||0};})};
-  try{
-    var resp=await fetch(gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
-    var result=await resp.json();
-    if(result.error)throw new Error(result.error);
+
+  var payload={
+    estNum:estNum,client:client,title:title,
+    date:document.getElementById('f-date').value,
+    due:document.getElementById('f-due').value,
+    payment:document.getElementById('f-pay').value||'貴社ご規定通り',
+    validity:document.getElementById('vbadge').textContent,
+    items:items.map(function(it){return{name:it.name,qty:it.qty,unit:it.unit,price:it.price,memo:it.memo,purchase:it.purchase||0};})
+  };
+
+  try {
+    // GETリクエストでCORSを回避
+    var encoded = encodeURIComponent(JSON.stringify(payload));
+    var url = gasUrl + '?data=' + encoded;
+    var resp = await fetch(url, { method:'GET', mode:'cors' });
+    var result = await resp.json();
+    if(result.error) throw new Error(result.error);
+
     document.getElementById('rtitle').textContent='完成！';
     document.getElementById('rbody').innerHTML=
       '<div class="rlinks">'+
@@ -284,14 +311,19 @@ async function handleSave(){
       '<div class="qra"><div id="qrr"></div><div class="qlbl">このQRでお客さんにPDFを確認してもらえます</div></div>';
     new QRCode(document.getElementById('qrr'),{text:result.pdfUrl,width:120,height:120,correctLevel:QRCode.CorrectLevel.M});
     toast('作成完了！');
-  }catch(err){
+  } catch(err) {
     document.getElementById('rtitle').textContent='エラー';
-    document.getElementById('rbody').innerHTML='<div style="padding:16px;font-size:13px;color:var(--red)">'+esc(err.message)+'</div><div style="padding:0 16px;font-size:12px;color:var(--text2)">GAS URLや権限設定を確認してください。</div>';
+    document.getElementById('rbody').innerHTML=
+      '<div style="padding:16px;font-size:13px;color:var(--red)">'+esc(err.message)+'</div>'+
+      '<div style="padding:0 16px 16px;font-size:12px;color:var(--text2)">GAS URLや権限設定を確認してください。</div>';
   }
 }
+
 function closeR(){document.getElementById('rover').className='rover';}
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show';setTimeout(function(){t.className='toast';},2800);}
+
 addItem('作業費',1,'式',0,'',0);
 </script>
+
 </body>
 </html>
