@@ -1,1 +1,297 @@
-PLACEHOLDER
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Craft-Mind見積">
+<title>Craft-Mind 見積書</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#fff;--bg2:#f7f7f5;--bg3:#f0f0ed;--text:#1a1a1a;--text2:#666;--text3:#aaa;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);--accent:#1a1a1a;--green:#1D9E75;--amber:#BA7517;--red:#E24B4A;--r:12px}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;--text:#f0f0ee;--text2:#aeaeb2;--text3:#636366;--border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.2);--accent:#f0f0ee}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;background:var(--bg3);color:var(--text)}
+.app{max-width:480px;margin:0 auto;padding-bottom:88px}
+.setup-banner{background:#fef3cd;border-bottom:1px solid #f0c040;padding:10px 14px;font-size:13px;color:#856404;cursor:pointer}
+.setup-banner.hidden{display:none}
+.modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.5);padding:20px;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.modal-card{background:var(--bg);border-radius:var(--r);padding:20px;width:100%;max-width:420px}
+.modal-card h3{font-size:16px;margin-bottom:10px}
+.modal-card p{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6}
+.modal-card input{width:100%;border:0.5px solid var(--border2);border-radius:8px;padding:10px 12px;font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;outline:none;margin-bottom:10px}
+.btn-row{display:flex;gap:8px}
+.header{background:var(--bg);border-bottom:0.5px solid var(--border);padding:14px 16px;position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between}
+.htitle{font-size:17px;font-weight:600}
+.hsub{font-size:12px;color:var(--text2);margin-top:1px}
+.enum{font-size:11px;color:var(--text3);background:var(--bg2);padding:3px 8px;border-radius:20px}
+.tab-bar{display:flex;background:var(--bg);border-bottom:0.5px solid var(--border);position:sticky;top:53px;z-index:9}
+.tab{flex:1;padding:11px;text-align:center;font-size:14px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab.active{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.section{background:var(--bg);margin:12px 12px 0;border-radius:var(--r);border:0.5px solid var(--border);overflow:hidden}
+.slabel{font-size:11px;font-weight:600;color:var(--text2);padding:10px 14px 7px;text-transform:uppercase;letter-spacing:.06em;border-bottom:0.5px solid var(--border);background:var(--bg2)}
+.frow{display:flex;align-items:center;padding:0 14px;min-height:48px;gap:8px;border-bottom:0.5px solid var(--border)}
+.frow:last-child{border-bottom:none}
+.flabel{font-size:13px;color:var(--text2);min-width:68px;flex-shrink:0}
+.frow input{flex:1;border:none;background:transparent;font-size:15px;color:var(--text);font-family:inherit;outline:none;text-align:right;min-width:0}
+.frow input::placeholder{color:var(--text3)}
+.vbadge{font-size:13px;color:var(--text2);margin-left:auto}
+.isec{margin:12px 12px 0}
+.icard{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px}
+.ihdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.inum{font-size:11px;font-weight:600;color:var(--text2);background:var(--bg2);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.iname{flex:1;border:none;background:transparent;font-size:15px;font-weight:500;color:var(--text);font-family:inherit;outline:none}
+.iname::placeholder{color:var(--text3);font-weight:400}
+.dbtn{width:24px;height:24px;border:0.5px solid var(--border2);border-radius:50%;background:transparent;cursor:pointer;color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.igrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.mf{display:flex;flex-direction:column;gap:3px}
+.ml{font-size:10px;color:var(--text2);font-weight:600;letter-spacing:.03em}
+.mi{border:0.5px solid var(--border2);border-radius:6px;padding:7px 8px;font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;outline:none;width:100%;-webkit-appearance:none}
+.mi:focus{border-color:var(--accent)}
+.iamt{display:flex;justify-content:space-between;align-items:center;padding:8px 0 6px;border-top:0.5px solid var(--border)}
+.albl{font-size:12px;color:var(--text2)}
+.aval{font-size:16px;font-weight:600}
+.imemo{margin-top:6px}
+.mmemo{width:100%;border:0.5px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;background:var(--bg2);color:var(--text);font-family:inherit;outline:none;resize:none}
+.mmemo::placeholder{color:var(--text3)}
+.addbtn{width:100%;padding:13px;border:0.5px dashed var(--border2);border-radius:var(--r);background:transparent;font-size:15px;color:var(--text2);cursor:pointer;font-family:inherit;margin-top:4px}
+.addbtn:active{background:var(--bg2)}
+.sumsec{margin:12px}
+.sumcard{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.srow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:14px}
+.srow.tot{border-top:0.5px solid var(--border);padding-top:10px;margin-top:4px;font-size:17px;font-weight:600}
+.slb{color:var(--text2)}
+.prow{display:flex;align-items:center;padding:0 14px;min-height:48px;gap:8px;border-bottom:0.5px solid var(--border)}
+.prow:last-child{border-bottom:none}
+.plbl{font-size:13px;color:var(--text2);flex:1}
+.pval{font-size:14px;font-weight:500}
+.pval.g{color:var(--green)}.pval.w{color:var(--amber)}.pval.b{color:var(--red)}
+.pinput{border:0.5px solid var(--border2);border-radius:6px;padding:6px 10px;font-size:14px;width:120px;background:var(--bg2);color:var(--text);font-family:inherit;outline:none;text-align:right;-webkit-appearance:none}
+.abar{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:0.5px solid var(--border);padding:10px 16px 24px;display:flex;gap:8px;max-width:480px;margin:0 auto}
+.bp{flex:2;padding:14px;border-radius:var(--r);border:none;background:var(--accent);color:var(--bg);font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
+.bs{flex:1;padding:14px;border-radius:var(--r);border:0.5px solid var(--border2);background:transparent;color:var(--text);font-size:15px;cursor:pointer;font-family:inherit}
+.bp:active{opacity:.7}.bs:active{background:var(--bg2)}
+.bsm{padding:8px 16px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit}
+.rover{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.5);padding:20px;align-items:flex-start;justify-content:center;overflow-y:auto}
+.rover.show{display:flex}
+.rcard{background:var(--bg);border-radius:var(--r);width:100%;max-width:380px;padding:20px;margin-top:20px}
+.rtbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.rtbar span{font-size:16px;font-weight:600}
+.rlinks{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.rlbtn{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg2);text-decoration:none;color:var(--text);font-size:14px}
+.qra{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 0;border-top:0.5px solid var(--border)}
+.qlbl{font-size:12px;color:var(--text2);text-align:center}
+.spinner-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="modal" id="setup-modal">
+  <div class="modal-card">
+    <h3>GAS URLを設定</h3>
+    <p>Google Apps Script をデプロイして取得した<br><strong>ウェブアプリURL</strong>を貼り付けてください。</p>
+    <input type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/...">
+    <div class="btn-row">
+      <button class="bsm" onclick="saveGasUrl()">保存</button>
+      <button class="bsm" onclick="closeSetup()">キャンセル</button>
+    </div>
+  </div>
+</div>
+<div class="app">
+  <div class="setup-banner" id="setup-banner" onclick="openSetup()">⚠ GAS URLが未設定 — タップして設定</div>
+  <div class="header">
+    <div><div class="htitle">見積書作成</div><div class="hsub">Craft-Mind</div></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="enum" id="est-number"></div>
+      <button class="bsm" onclick="openSetup()" style="font-size:11px;padding:4px 8px">設定</button>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" id="tab-form" onclick="sw('form')">入力</div>
+    <div class="tab" id="tab-profit" onclick="sw('profit')">利益計算</div>
+  </div>
+  <div id="vform">
+    <div class="section">
+      <div class="slabel">基本情報</div>
+      <div class="frow"><span class="flabel">日付</span><input type="date" id="f-date" oninput="upV()"></div>
+      <div class="frow"><span class="flabel">宛先</span><input type="text" id="f-client" placeholder="株式会社○○　御中"></div>
+      <div class="frow"><span class="flabel">案件名</span><input type="text" id="f-title" placeholder="例：豊洲ON"></div>
+      <div class="frow"><span class="flabel">納期</span><input type="date" id="f-due"></div>
+      <div class="frow"><span class="flabel">有効期限</span><span class="vbadge" id="vbadge">—</span></div>
+      <div class="frow"><span class="flabel">支払条件</span><input type="text" id="f-pay" placeholder="貴社ご規定通り"></div>
+    </div>
+    <div class="isec"><div id="ic"></div><button class="addbtn" onclick="addItem()">＋ 費目を追加</button></div>
+    <div class="sumsec">
+      <div class="sumcard">
+        <div class="srow"><span class="slb">小計</span><span id="ss">¥0</span></div>
+        <div class="srow"><span class="slb">消費税（10%）</span><span id="st">¥0</span></div>
+        <div class="srow tot"><span>合計</span><span id="sa">¥0</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="vprofit" style="display:none">
+    <div class="section" style="margin-top:12px">
+      <div class="slabel">仕入れ入力</div>
+      <div id="pc"></div>
+    </div>
+    <div class="section" style="margin-top:12px">
+      <div class="slabel">利益サマリー</div>
+      <div class="prow"><span class="plbl">売上（税抜）</span><span class="pval" id="ps">¥0</span></div>
+      <div class="prow"><span class="plbl">仕入合計</span><span class="pval" id="pcost">¥0</span></div>
+      <div class="prow"><span class="plbl">粗利</span><span class="pval" id="pp">¥0</span></div>
+      <div class="prow"><span class="plbl">利益率</span><span class="pval" id="pm">—</span></div>
+    </div>
+  </div>
+</div>
+<div class="abar">
+  <button class="bs" onclick="previewOnly()">確認</button>
+  <button class="bp" onclick="handleSave()">シート作成 &amp; PDF</button>
+</div>
+<div class="rover" id="rover">
+  <div class="rcard">
+    <div class="rtbar"><span id="rtitle">処理中...</span><button class="bsm" onclick="closeR()">閉じる</button></div>
+    <div id="rbody"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var GK='craftmind_gas_url';
+var items=[],ic=0;
+function getGas(){return localStorage.getItem(GK)||''}
+function saveGasUrl(){
+  var u=document.getElementById('gas-url-input').value.trim();
+  if(!u){toast('URLを入力してください');return;}
+  localStorage.setItem(GK,u);
+  document.getElementById('setup-banner').className='setup-banner hidden';
+  document.getElementById('setup-modal').className='modal';
+  toast('GAS URLを保存しました');
+}
+function openSetup(){document.getElementById('gas-url-input').value=getGas();document.getElementById('setup-modal').className='modal show';}
+function closeSetup(){document.getElementById('setup-modal').className='modal';}
+if(getGas())document.getElementById('setup-banner').className='setup-banner hidden';
+function genNum(){
+  var d=new Date(),yr=String(d.getFullYear()).slice(-2),mo=String(d.getMonth()+1).padStart(2,'0');
+  var k='eq_'+yr+mo,seq=parseInt(localStorage.getItem(k)||'0')+1;
+  localStorage.setItem(k,seq);
+  return yr+mo+'-'+String(seq).padStart(3,'0');
+}
+var estNum=genNum();
+document.getElementById('est-number').textContent='No.'+estNum;
+document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
+upV();
+function upV(){
+  var d=document.getElementById('f-date').value,el=document.getElementById('vbadge');
+  if(!d){el.textContent='—';return;}
+  var dt=new Date(d);dt.setMonth(dt.getMonth()+1);
+  el.textContent=dt.getFullYear()+'年'+(dt.getMonth()+1)+'月'+dt.getDate()+'日';
+}
+function sw(t){
+  document.getElementById('tab-form').className='tab'+(t==='form'?' active':'');
+  document.getElementById('tab-profit').className='tab'+(t==='profit'?' active':'');
+  document.getElementById('vform').style.display=t==='form'?'':'none';
+  document.getElementById('vprofit').style.display=t==='profit'?'':'none';
+  if(t==='profit')renderP();
+}
+function fy(v){return'¥'+Math.round(v).toLocaleString('ja-JP');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function addItem(n,q,u,p,m,pu){
+  ic++;items.push({id:'i'+ic,name:n||'',qty:q!==undefined?q:1,unit:u||'式',price:p||0,memo:m||'',purchase:pu||0});
+  renderI();
+}
+function renderI(){
+  var c=document.getElementById('ic');c.innerHTML='';
+  items.forEach(function(it,i){
+    var amt=Math.round(it.qty*it.price),div=document.createElement('div');div.className='icard';
+    div.innerHTML='<div class="ihdr"><div class="inum">'+(i+1)+'</div>'+
+      '<input class="iname" type="text" placeholder="費目名" value="'+esc(it.name)+'" oninput="sf(\''+it.id+'\',\'name\',this.value)">'+
+      '<button class="dbtn" onclick="delI(\''+it.id+'\')">×</button></div>'+
+      '<div class="igrid">'+
+      '<div class="mf"><div class="ml">数量</div><input class="mi" type="number" value="'+it.qty+'" min="0" step="any" inputmode="decimal" oninput="sf(\''+it.id+'\',\'qty\',+this.value);ra(\''+it.id+'\')"></div>'+
+      '<div class="mf"><div class="ml">単位</div><input class="mi" type="text" value="'+esc(it.unit)+'" placeholder="式" oninput="sf(\''+it.id+'\',\'unit\',this.value)"></div>'+
+      '<div class="mf"><div class="ml">単価</div><input class="mi" type="number" value="'+it.price+'" min="0" step="any" inputmode="decimal" oninput="sf(\''+it.id+'\',\'price\',+this.value);ra(\''+it.id+'\')"></div>'+
+      '</div>'+
+      '<div class="iamt"><span class="albl">金額</span><span class="aval" id="a'+it.id+'">'+fy(amt)+'</span></div>'+
+      '<div class="imemo"><input class="mmemo" type="text" placeholder="備考（任意）" value="'+esc(it.memo)+'" oninput="sf(\''+it.id+'\',\'memo\',this.value)"></div>';
+    c.appendChild(div);
+  });
+  upS();
+}
+function sf(id,f,v){var it=items.find(function(x){return x.id===id;});if(it)it[f]=v;if(f==='qty'||f==='price')upS();}
+function ra(id){var it=items.find(function(x){return x.id===id;});if(!it)return;var el=document.getElementById('a'+id);if(el)el.textContent=fy(it.qty*it.price);}
+function delI(id){items=items.filter(function(x){return x.id!==id;});renderI();}
+function sub(){return items.reduce(function(s,it){return s+Math.round(it.qty*it.price);},0);}
+function upS(){var s=sub(),t=Math.round(s*.1);document.getElementById('ss').textContent=fy(s);document.getElementById('st').textContent=fy(t);document.getElementById('sa').textContent=fy(s+t);}
+function renderP(){
+  var c=document.getElementById('pc');c.innerHTML='';
+  if(!items.length){c.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:14px">費目を入力タブで追加</div>';return;}
+  items.forEach(function(it){
+    var r=document.createElement('div');r.className='prow';r.style.justifyContent='space-between';
+    r.innerHTML='<span class="plbl">'+esc(it.name||'（未入力）')+'<br><span style="font-size:11px;color:var(--text3)">売：'+fy(it.qty*it.price)+'</span></span>'+
+      '<input type="number" class="pinput" placeholder="仕入れ" value="'+(it.purchase||'')+'" min="0" inputmode="decimal" oninput="sf(\''+it.id+'\',\'purchase\',+this.value);upP()">';
+    c.appendChild(r);
+  });
+  upP();
+}
+function upP(){
+  var s=sub(),cost=items.reduce(function(a,it){return a+(+it.purchase||0);},0),profit=s-cost,m=s>0?profit/s*100:null;
+  document.getElementById('ps').textContent=fy(s);document.getElementById('pcost').textContent=fy(cost);document.getElementById('pp').textContent=fy(profit);
+  var el=document.getElementById('pm');
+  if(m===null){el.textContent='—';el.className='pval';}
+  else{el.textContent=m.toFixed(1)+'%';el.className='pval '+(m>=20?'g':m>=10?'w':'b');}
+}
+function previewOnly(){
+  var client=document.getElementById('f-client').value||'（宛先未入力）',title=document.getElementById('f-title').value||'（案件名未入力）';
+  var s=sub(),t=Math.round(s*.1),total=s+t;
+  var rows=items.map(function(it,i){return'<tr><td>'+(i+1)+'</td><td>'+esc(it.name)+'</td><td style="text-align:right">'+it.qty+'</td><td>'+esc(it.unit)+'</td><td style="text-align:right">'+Math.round(it.price).toLocaleString()+'</td><td style="text-align:right">'+Math.round(it.qty*it.price).toLocaleString()+'</td><td>'+esc(it.memo)+'</td></tr>';}).join('');
+  var html='<div style="font-size:12px;color:var(--text2);margin-bottom:6px">No.'+esc(estNum)+'</div>'+
+    '<div style="font-size:17px;font-weight:600;margin-bottom:4px">'+esc(client)+'</div>'+
+    '<div style="font-size:13px;color:var(--text2);margin-bottom:10px">件名：'+esc(title)+'</div>'+
+    '<div style="background:var(--bg2);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;justify-content:space-between">'+
+    '<span style="font-size:12px;color:var(--text2)">お見積り金額（税込）</span><span style="font-size:18px;font-weight:600">'+fy(total)+'円</span></div>'+
+    '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">'+
+    '<thead><tr style="background:var(--bg2)"><th style="padding:5px 4px;text-align:left">#</th><th style="padding:5px 4px;text-align:left">費目</th><th style="padding:5px 4px;text-align:right">数量</th><th style="padding:5px 4px">単位</th><th style="padding:5px 4px;text-align:right">単価</th><th style="padding:5px 4px;text-align:right">金額</th><th style="padding:5px 4px">備考</th></tr></thead>'+
+    '<tbody>'+rows+'</tbody></table></div>'+
+    '<div style="text-align:right;font-size:13px;margin-top:8px">小計 '+fy(s)+'　消費税 '+fy(t)+'</div>'+
+    '<div style="text-align:right;font-size:15px;font-weight:600;margin-top:4px">合計 '+fy(total)+'円</div>';
+  document.getElementById('rtitle').textContent='見積内容確認';
+  document.getElementById('rbody').innerHTML=html;
+  document.getElementById('rover').className='rover show';
+}
+async function handleSave(){
+  var client=document.getElementById('f-client').value,title=document.getElementById('f-title').value;
+  if(!client||!title){toast('宛先と案件名を入力してください');return;}
+  var gasUrl=getGas();
+  if(!gasUrl){toast('GAS URLを設定してください');openSetup();return;}
+  document.getElementById('rtitle').textContent='作成中...';
+  document.getElementById('rbody').innerHTML='<div class="spinner-wrap"><div class="spinner"></div><div style="font-size:13px;color:var(--text2)">スプレッドシートを作成中…<br>PDFを生成中…</div></div>';
+  document.getElementById('rover').className='rover show';
+  var payload={estNum:estNum,client:client,title:title,date:document.getElementById('f-date').value,due:document.getElementById('f-due').value,payment:document.getElementById('f-pay').value||'貴社ご規定通り',validity:document.getElementById('vbadge').textContent,items:items.map(function(it){return{name:it.name,qty:it.qty,unit:it.unit,price:it.price,memo:it.memo,purchase:it.purchase||0};})};
+  try{
+    var resp=await fetch(gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    var result=await resp.json();
+    if(result.error)throw new Error(result.error);
+    document.getElementById('rtitle').textContent='完成！';
+    document.getElementById('rbody').innerHTML=
+      '<div class="rlinks">'+
+      '<a class="rlbtn" href="'+result.sheetUrl+'" target="_blank"><span>スプレッドシートを開く</span><span>↗</span></a>'+
+      '<a class="rlbtn" href="'+result.pdfUrl+'" target="_blank"><span>PDFを開く</span><span>↗</span></a>'+
+      '</div>'+
+      '<div class="qra"><div id="qrr"></div><div class="qlbl">このQRでお客さんにPDFを確認してもらえます</div></div>';
+    new QRCode(document.getElementById('qrr'),{text:result.pdfUrl,width:120,height:120,correctLevel:QRCode.CorrectLevel.M});
+    toast('作成完了！');
+  }catch(err){
+    document.getElementById('rtitle').textContent='エラー';
+    document.getElementById('rbody').innerHTML='<div style="padding:16px;font-size:13px;color:var(--red)">'+esc(err.message)+'</div><div style="padding:0 16px;font-size:12px;color:var(--text2)">GAS URLや権限設定を確認してください。</div>';
+  }
+}
+function closeR(){document.getElementById('rover').className='rover';}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show';setTimeout(function(){t.className='toast';},2800);}
+addItem('作業費',1,'式',0,'',0);
+</script>
+</body>
+</html>
